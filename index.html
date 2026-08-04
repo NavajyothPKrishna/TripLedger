@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripLedger — Group Travel & Expense System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">T</div>
+  <div class="logo-text">Trip<span>Ledger</span></div>
+  <div class="header-badge">B16 · DBMS Project</div>
+</header>
+
+<div class="shell">
+  <nav>
+    <div class="nav-section">Tables</div>
+    <div class="nav-item active" onclick="switchSection('users', this)">
+      <span class="nav-icon">👤</span> Users
+    </div>
+    <div class="nav-item" onclick="switchSection('trips', this)">
+      <span class="nav-icon">✈️</span> Trips
+    </div>
+    <div class="nav-item" onclick="switchSection('members', this)">
+      <span class="nav-icon">🧑‍🤝‍🧑</span> Trip Members
+    </div>
+    <div class="nav-item" onclick="switchSection('itinerary', this)">
+      <span class="nav-icon">📅</span> Itinerary Items
+    </div>
+    <div class="nav-item" onclick="switchSection('expenses', this)">
+      <span class="nav-icon">💸</span> Expenses
+    </div>
+    <div class="nav-item" onclick="switchSection('splits', this)">
+      <span class="nav-icon">⚖️</span> Expense Splits
+    </div>
+    <div class="nav-section">View</div>
+    <div class="nav-item" onclick="switchSection('balances', this)">
+      <span class="nav-icon">📊</span> Member Balances
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── USERS ── -->
+    <div id="sec-users" class="section active">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · users</div>
+        <div class="page-title">Register a User</div>
+        <div class="page-desc">Primary user record — every traveler must be registered before joining a trip.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-blue">👤</div>
+          User Details
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>User ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. USR001" id="u-id">
+          </div>
+          <div class="field">
+            <label>Full Name <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. Harinandan Sunil" id="u-name">
+          </div>
+          <div class="field">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" placeholder="user@example.com" id="u-email">
+          </div>
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" placeholder="+91 9876543210" id="u-phone">
+          </div>
+          <div class="field">
+            <label>Password Hash <span class="req">*</span></label>
+            <input type="password" placeholder="Stored as hash in DB" id="u-pass">
+          </div>
+          <div class="field">
+            <label>Created At</label>
+            <input type="datetime-local" id="u-created">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="save('User')">Insert Row</button>
+          <button class="btn btn-secondary" onclick="clearForm('users')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRIPS ── -->
+    <div id="sec-trips" class="section">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · trips</div>
+        <div class="page-title">Create a Trip</div>
+        <div class="page-desc">Stores trip duration, currency, and the coordinator who created it.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-blue">✈️</div>
+          Trip Details
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Trip ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. TRP001" id="tr-id">
+          </div>
+          <div class="field">
+            <label>Trip Name <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. Kerala Road Trip 2025" id="tr-name">
+          </div>
+          <div class="field span-2">
+            <label>Description</label>
+            <textarea placeholder="Brief description of the trip..." id="tr-desc"></textarea>
+          </div>
+          <div class="field">
+            <label>Start Date <span class="req">*</span></label>
+            <input type="date" id="tr-start">
+          </div>
+          <div class="field">
+            <label>End Date <span class="req">*</span></label>
+            <input type="date" id="tr-end">
+          </div>
+          <div class="field">
+            <label>Base Currency <span class="req">*</span></label>
+            <select id="tr-currency">
+              <option value="">— Select —</option>
+              <option>INR</option><option>USD</option><option>EUR</option>
+              <option>GBP</option><option>JPY</option><option>AED</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Coordinator (User ID) <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. USR001" id="tr-coord">
+            <div class="field-hint">Foreign key → users.user_id</div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="save('Trip')">Insert Row</button>
+          <button class="btn btn-secondary" onclick="clearForm('trips')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRIP MEMBERS ── -->
+    <div id="sec-members" class="section">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · trip_members</div>
+        <div class="page-title">Add a Trip Member</div>
+        <div class="page-desc">Represents travelers on a trip with roles — Coordinator or Member.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-green">🧑‍🤝‍🧑</div>
+          Membership Record
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Trip ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. TRP001" id="m-trip">
+            <div class="field-hint">Foreign key → trips.trip_id</div>
+          </div>
+          <div class="field">
+            <label>User ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. USR002" id="m-user">
+            <div class="field-hint">Foreign key → users.user_id</div>
+          </div>
+          <div class="field">
+            <label>Role <span class="req">*</span></label>
+            <div style="margin-top:4px">
+              <div class="pill-group">
+                <div class="pill" onclick="selectPill(this, 'role')">Coordinator</div>
+                <div class="pill selected" onclick="selectPill(this, 'role')">Member</div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Joined At</label>
+            <input type="datetime-local" id="m-joined">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="save('Trip Member')">Insert Row</button>
+          <button class="btn btn-secondary" onclick="clearForm('members')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ITINERARY ITEMS ── -->
+    <div id="sec-itinerary" class="section">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · itinerary_items</div>
+        <div class="page-title">Add Itinerary Item</div>
+        <div class="page-desc">Daily schedule containing locations, activities, and timestamps for each stop.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-yellow">📅</div>
+          Schedule Entry
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Item ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. ITN001" id="it-id">
+          </div>
+          <div class="field">
+            <label>Trip ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. TRP001" id="it-trip">
+            <div class="field-hint">Foreign key → trips.trip_id</div>
+          </div>
+          <div class="field span-2">
+            <label>Location / Place Name <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. Alleppey Backwaters, Kerala" id="it-loc">
+          </div>
+          <div class="field">
+            <label>Activity Type</label>
+            <select id="it-type">
+              <option value="">— Select —</option>
+              <option>Sightseeing</option>
+              <option>Transit</option>
+              <option>Accommodation</option>
+              <option>Dining</option>
+              <option>Adventure</option>
+              <option>Rest</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Day Number <span class="req">*</span></label>
+            <input type="number" placeholder="e.g. 1" min="1" id="it-day">
+          </div>
+          <div class="field">
+            <label>Start Time <span class="req">*</span></label>
+            <input type="datetime-local" id="it-start">
+          </div>
+          <div class="field">
+            <label>End Time</label>
+            <input type="datetime-local" id="it-end">
+          </div>
+          <div class="field span-2">
+            <label>Notes</label>
+            <textarea placeholder="Any additional details, booking references, etc." id="it-notes"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="save('Itinerary Item')">Insert Row</button>
+          <button class="btn btn-secondary" onclick="clearForm('itinerary')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EXPENSES ── -->
+    <div id="sec-expenses" class="section">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · expenses</div>
+        <div class="page-title">Log an Expense</div>
+        <div class="page-desc">Tracks shared bills — who paid, in which currency, for which trip.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-green">💸</div>
+          Expense Record
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Expense ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. EXP001" id="ex-id">
+          </div>
+          <div class="field">
+            <label>Trip ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. TRP001" id="ex-trip">
+            <div class="field-hint">Foreign key → trips.trip_id</div>
+          </div>
+          <div class="field span-2">
+            <label>Description <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. Hotel Ashoka — 3 nights" id="ex-desc">
+          </div>
+          <div class="field">
+            <label>Total Amount <span class="req">*</span></label>
+            <input type="number" step="0.01" placeholder="0.00" id="ex-amount">
+          </div>
+          <div class="field">
+            <label>Currency <span class="req">*</span></label>
+            <select id="ex-currency">
+              <option>INR</option><option>USD</option><option>EUR</option>
+              <option>GBP</option><option>JPY</option><option>AED</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Paid By (User ID) <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. USR001" id="ex-payer">
+            <div class="field-hint">Foreign key → users.user_id</div>
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <select id="ex-cat">
+              <option value="">— Select —</option>
+              <option>Accommodation</option>
+              <option>Food & Drinks</option>
+              <option>Transport</option>
+              <option>Activities</option>
+              <option>Shopping</option>
+              <option>Miscellaneous</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Expense Date <span class="req">*</span></label>
+            <input type="date" id="ex-date">
+          </div>
+          <div class="field">
+            <label>Itinerary Item ID</label>
+            <input type="text" placeholder="e.g. ITN001 (optional)" id="ex-itin">
+            <div class="field-hint">Foreign key → itinerary_items.item_id</div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="save('Expense')">Insert Row</button>
+          <button class="btn btn-secondary" onclick="clearForm('expenses')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EXPENSE SPLITS ── -->
+    <div id="sec-splits" class="section">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · expense_splits</div>
+        <div class="page-title">Define Expense Splits</div>
+        <div class="page-desc">Links splits to members via composite foreign keys. SUM(split amounts) must equal the total expense — enforced by DB constraint.</div>
+      </div>
+
+      <div class="info-box">
+        <strong>Constraint Notice:</strong> The database enforces <code>SUM(splits) == expense_amount</code> on transaction commit. Ensure all split rows for an expense add up exactly.
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-purple">⚖️</div>
+          Split Entry
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Expense ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. EXP001" id="sp-exp">
+            <div class="field-hint">Foreign key → expenses.expense_id</div>
+          </div>
+          <div class="field">
+            <label>Split Type</label>
+            <div style="margin-top:4px">
+              <div class="pill-group">
+                <div class="pill selected" onclick="selectPill(this, 'split')">Equal</div>
+                <div class="pill" onclick="selectPill(this, 'split')">Exact</div>
+                <div class="pill" onclick="selectPill(this, 'split')">Percentage</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div style="font-size:12px; color:var(--muted); margin-bottom:12px; font-weight:500;">MEMBER SPLITS</div>
+
+        <div id="split-rows">
+          <div class="split-row">
+            <div class="field">
+              <label>Member (User ID) <span class="req">*</span></label>
+              <input type="text" placeholder="e.g. USR001">
+            </div>
+            <div class="field">
+              <label>Split Amount (INR) <span class="req">*</span></label>
+              <input type="number" step="0.01" placeholder="0.00">
+            </div>
+            <button class="btn-icon" title="Remove row" onclick="removeRow(this)">×</button>
+          </div>
+        </div>
+
+        <button class="btn-add" onclick="addSplitRow()">＋ Add Member Split</button>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="save('Expense Splits')">Insert All Splits</button>
+          <button class="btn btn-secondary" onclick="clearForm('splits')">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MEMBER BALANCES ── -->
+    <div id="sec-balances" class="section">
+      <div class="page-header">
+        <div class="page-eyebrow">Table · member_balances</div>
+        <div class="page-title">Member Balances</div>
+        <div class="page-desc">Real-time net standings — auto-updated by the balance trigger on every expense write.</div>
+      </div>
+
+      <div class="info-box">
+        <strong>Auto-managed by trigger:</strong> This table is updated automatically by the <code>balance_trigger</code> in PostgreSQL. You can query or seed initial values manually below.
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-yellow">📊</div>
+          Balance Record (Manual Seed / Override)
+        </div>
+        <div class="form-grid cols-3">
+          <div class="field">
+            <label>Trip ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. TRP001" id="bal-trip">
+          </div>
+          <div class="field">
+            <label>User ID <span class="req">*</span></label>
+            <input type="text" placeholder="e.g. USR001" id="bal-user">
+          </div>
+          <div class="field">
+            <label>Net Balance <span class="req">*</span></label>
+            <input type="number" step="0.01" placeholder="e.g. -450.00 or 1200.00" id="bal-amount">
+            <div class="field-hint">Positive = owed to you · Negative = you owe</div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-success" onclick="save('Balance Record')">Seed / Update</button>
+          <button class="btn btn-secondary" onclick="clearForm('balances')">Clear</button>
+        </div>
+      </div>
+
+      <!-- Simplified sample display -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon icon-blue">📋</div>
+          simplify_trip_debts — Settlement Preview
+        </div>
+        <div class="info-box" style="margin-bottom:0">
+          Run the <strong>simplify_trip_debts(trip_id)</strong> stored function to get the optimal peer-to-peer transfer table that minimizes the number of transactions needed for full settlement.
+        </div>
+        <div style="margin-top:16px">
+          <div class="form-grid cols-1">
+            <div class="field">
+              <label>Trip ID to Settle</label>
+              <input type="text" placeholder="e.g. TRP001" id="settle-trip">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="runSettle()">▶ Run Debt Simplification</button>
+          </div>
+        </div>
+        <div id="settle-result" style="display:none; margin-top:16px; background:var(--input-bg); border:1px solid var(--border); border-radius:8px; padding:16px; font-size:13px; color:var(--muted); line-height:1.8;">
+          <div style="color:var(--green); font-weight:600; margin-bottom:8px;">✓ Transfer Table</div>
+          <div>USR002 → USR001 : <span class="balance-positive">₹ 850.00</span></div>
+          <div>USR003 → USR001 : <span class="balance-positive">₹ 425.00</span></div>
+          <div>USR004 → USR002 : <span class="balance-positive">₹ 212.50</span></div>
+          <div style="margin-top:10px; font-size:11px; color:var(--muted);">3 transactions settle all debts in TRP001.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast">✓ Row inserted successfully</div>
+
+<script src="app.js"></script>
+</body>
+</html>
