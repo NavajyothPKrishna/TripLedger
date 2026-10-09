@@ -2,7 +2,7 @@
 const API_BASE_URL = 'https://tripledger-backend-zx4u.onrender.com';
 
 // Navigation section switching logic
-function switchSection(id, el) {
+function switchSection(id, el) { 
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
