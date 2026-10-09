@@ -62,7 +62,7 @@
           </div>
           <div class="field">
             <label>Full Name <span class="req">*</span></label>
-            <input type="text" placeholder="e.g. James Bond" id="u-name">
+            <input type="text" placeholder="e.g. Navajyoth Prasad" id="u-name">
           </div>
           <div class="field">
             <label>Email Address <span class="req">*</span></label>
@@ -70,7 +70,7 @@
           </div>
           <div class="field">
             <label>Phone Number</label>
-            <input type="tel" placeholder="+91 91******86" id="u-phone">
+            <input type="tel" placeholder="+91 9876543210" id="u-phone">
           </div>
           <div class="field">
             <label>Password Hash <span class="req">*</span></label>
@@ -136,7 +136,7 @@
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" onclick="save('Trip')">Insert Row</button>
+          <button class="btn btn-primary" onclick="saveTrip()">Insert Row</button>
           <button class="btn btn-secondary" onclick="clearForm('trips')">Clear</button>
         </div>
       </div>
@@ -180,7 +180,7 @@
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" onclick="save('Trip Member')">Insert Row</button>
+          <button class="btn btn-primary" onclick="saveMember()">Insert Row</button>
           <button class="btn btn-secondary" onclick="clearForm('members')">Clear</button>
         </div>
       </div>
@@ -243,7 +243,7 @@
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" onclick="save('Itinerary Item')">Insert Row</button>
+          <button class="btn btn-primary" onclick="saveItinerary()">Insert Row</button>
           <button class="btn btn-secondary" onclick="clearForm('itinerary')">Clear</button>
         </div>
       </div>
@@ -314,7 +314,7 @@
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-primary" onclick="save('Expense')">Insert Row</button>
+          <button class="btn btn-primary" onclick="saveExpense()">Insert Row</button>
           <button class="btn btn-secondary" onclick="clearForm('expenses')">Clear</button>
         </div>
       </div>
@@ -376,7 +376,7 @@
         <button class="btn-add" onclick="addSplitRow()">＋ Add Member Split</button>
 
         <div class="form-actions">
-          <button class="btn btn-primary" onclick="save('Expense Splits')">Insert All Splits</button>
+          <button class="btn btn-primary" onclick="saveSplits()">Insert All Splits</button>
           <button class="btn btn-secondary" onclick="clearForm('splits')">Clear</button>
         </div>
       </div>
@@ -415,7 +415,7 @@
           </div>
         </div>
         <div class="form-actions">
-          <button class="btn btn-success" onclick="save('Balance Record')">Seed / Update</button>
+          <button class="btn btn-success" onclick="saveBalance()">Seed / Update</button>
           <button class="btn btn-secondary" onclick="clearForm('balances')">Clear</button>
         </div>
       </div>
