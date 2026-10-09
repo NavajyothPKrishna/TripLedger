@@ -14,8 +14,8 @@ const PORT = process.env.PORT || 3000;
 
 // Cloud database pool configuration supporting Supabase/Render and local fallback
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:your_local_password@localhost:5432/tripledger',
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
 });
 
 // Helper function to sanitize empty strings into null for SQL
