@@ -7,11 +7,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static frontend files so http://localhost:3000 loads your UI dashboard directly
+// Serve static frontend files if run together locally, or fallback
 app.use(express.static(path.join(__dirname)));
 
+const PORT = process.env.PORT || 3000;
+
+// Cloud database pool configuration supporting Supabase/Render and local fallback
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:postgres@localhost:5432/tripledger'
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:your_local_password@localhost:5432/tripledger',
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
 // Helper function to sanitize empty strings into null for SQL
@@ -143,4 +147,4 @@ app.post('/api/member-balances', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
