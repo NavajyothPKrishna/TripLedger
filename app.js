@@ -1,5 +1,5 @@
 // Cloud backend base URL
-const API_BASE_URL = 'https://tripledger-backend.onrender.com';
+const API_BASE_URL = 'https://tripledger-backend-zx4u.onrender.com';
 
 // Navigation section switching logic
 function switchSection(id, el) {
