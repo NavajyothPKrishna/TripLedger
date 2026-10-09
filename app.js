@@ -55,6 +55,11 @@ async function saveUser() {
   sendRequest(`${API_BASE_URL}/api/users`, payload, 'User');
 }
 
+async function save(entityType) {
+  if (entityType === 'User') {
+    await saveUser();
+  }
+}
 // Save Trip
 async function saveTrip() {
   const payload = {
