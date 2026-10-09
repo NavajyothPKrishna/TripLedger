@@ -43,18 +43,16 @@ function removeRow(btn) {
 }
 
 // Save User
-async function save(entityType) {
-  if (entityType === 'User') {
-    const payload = {
-      userId: document.getElementById('u-id').value,
-      fullName: document.getElementById('u-name').value,
-      email: document.getElementById('u-email').value,
-      phone: document.getElementById('u-phone').value,
-      passwordHash: document.getElementById('u-pass').value,
-      createdAt: document.getElementById('u-created').value || null
-    };
-    sendRequest(`${API_BASE_URL}/api/users`, payload, 'User');
-  }
+async function saveUser() {
+  const payload = {
+    userId: document.getElementById('u-id').value,
+    fullName: document.getElementById('u-name').value,
+    email: document.getElementById('u-email').value,
+    phone: document.getElementById('u-phone').value,
+    passwordHash: document.getElementById('u-pass').value,
+    createdAt: document.getElementById('u-created').value || null
+  };
+  sendRequest(`${API_BASE_URL}/api/users`, payload, 'User');
 }
 
 // Save Trip
