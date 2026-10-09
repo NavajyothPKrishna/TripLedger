@@ -1,3 +1,6 @@
+// Cloud backend base URL
+const API_BASE_URL = 'https://tripledger-backend.onrender.com';
+
 // Navigation section switching logic
 function switchSection(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -50,7 +53,7 @@ async function save(entityType) {
       passwordHash: document.getElementById('u-pass').value,
       createdAt: document.getElementById('u-created').value || null
     };
-    sendRequest('http://localhost:3000/api/users', payload, 'User');
+    sendRequest(`${API_BASE_URL}/api/users`, payload, 'User');
   }
 }
 
@@ -65,7 +68,7 @@ async function saveTrip() {
     baseCurrency: document.getElementById('tr-currency').value,
     coordinatorId: document.getElementById('tr-coord').value
   };
-  sendRequest('http://localhost:3000/api/trips', payload, 'Trip');
+  sendRequest(`${API_BASE_URL}/api/trips`, payload, 'Trip');
 }
 
 // Save Trip Member
@@ -77,7 +80,7 @@ async function saveMember() {
     role: selectedRoleEl ? selectedRoleEl.textContent : 'Member',
     joinedAt: document.getElementById('m-joined').value
   };
-  sendRequest('http://localhost:3000/api/trip-members', payload, 'Trip Member');
+  sendRequest(`${API_BASE_URL}/api/trip-members`, payload, 'Trip Member');
 }
 
 // Save Itinerary Item
@@ -92,7 +95,7 @@ async function saveItinerary() {
     endTime: document.getElementById('it-end').value,
     notes: document.getElementById('it-notes').value
   };
-  sendRequest('http://localhost:3000/api/itinerary', payload, 'Itinerary Item');
+  sendRequest(`${API_BASE_URL}/api/itinerary`, payload, 'Itinerary Item');
 }
 
 // Save Expense
@@ -108,7 +111,7 @@ async function saveExpense() {
     expenseDate: document.getElementById('ex-date').value,
     itineraryItemId: document.getElementById('ex-itin').value
   };
-  sendRequest('http://localhost:3000/api/expenses', payload, 'Expense');
+  sendRequest(`${API_BASE_URL}/api/expenses`, payload, 'Expense');
 }
 
 // Save Expense Splits
@@ -125,7 +128,7 @@ async function saveSplits() {
     });
   });
 
-  sendRequest('http://localhost:3000/api/expense-splits', { expenseId, splits }, 'Expense Splits');
+  sendRequest(`${API_BASE_URL}/api/expense-splits`, { expenseId, splits }, 'Expense Splits');
 }
 
 // Save Member Balance (Seed/Update)
@@ -135,7 +138,7 @@ async function saveBalance() {
     userId: document.getElementById('bal-user').value,
     netBalance: document.getElementById('bal-amount').value
   };
-  sendRequest('http://localhost:3000/api/member-balances', payload, 'Balance Record');
+  sendRequest(`${API_BASE_URL}/api/member-balances`, payload, 'Balance Record');
 }
 
 // Generic helper function for fetch requests & toast alerts
@@ -158,7 +161,7 @@ async function sendRequest(url, payload, label) {
     }
   } catch (err) {
     console.error(err);
-    alert('Could not connect to the server. Ensure node server.js is running.');
+    alert('Could not connect to the cloud server. Please check your network or backend deployment.');
   }
 }
 
