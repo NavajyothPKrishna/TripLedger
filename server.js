@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname)));
 
 const PORT = process.env.PORT || 3000;
 
-// Cloud database pool configuration supporting Supabase/Render and local fallback
+// Cloud database pool configuration supporting Supabase/Render with SSL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
