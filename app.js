@@ -2,7 +2,7 @@
 const API_BASE_URL = 'https://tripledger-backend-zx4u.onrender.com';
 
 // Navigation section switching logic
-function switchSection(id, el) { 
+function switchSection(id, el) {  
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
@@ -54,11 +54,13 @@ async function saveUser() {
   };
   sendRequest(`${API_BASE_URL}/api/users`, payload, 'User');
 }
+
 async function save(entityType) {
   if (entityType === 'User') {
     await saveUser();
   }
 }
+
 // Save Trip
 async function saveTrip() {
   const payload = {
@@ -182,14 +184,52 @@ function clearForm(sectionId) {
   }
 }
 
-// Run settlement routine preview
-function runSettle() {
-  const r = document.getElementById('settle-result');
-  r.style.display = 'block';
+// Run settlement routine preview dynamically
+async function runSettle() {
+  const tripId = document.getElementById('settle-trip').value.trim();
+  const resultContainer = document.getElementById('settle-result');
   const toast = document.getElementById('toast');
-  toast.textContent = '✓ simplify_trip_debts() executed';
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2800);
+
+  if (!tripId) {
+    alert('Please enter a Trip ID to settle.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/simplify-debts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tripId })
+    });
+    
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      resultContainer.style.display = 'block';
+      
+      let html = `<div style="color:var(--green); font-weight:600; margin-bottom:8px;">✓ Transfer Table for ${tripId}</div>`;
+      
+      if (data.transfers.length === 0) {
+        html += `<div>All debts are already settled! No transactions needed.</div>`;
+      } else {
+        data.transfers.forEach(t => {
+          html += `<div>${t.from} → ${t.to} : <span class="balance-positive">₹ ${t.amount.toFixed(2)}</span></div>`;
+        });
+        html += `<div style="margin-top:10px; font-size:11px; color:var(--muted);">${data.transfers.length} transaction(s) settle all debts in ${tripId}.</div>`;
+      }
+      
+      resultContainer.innerHTML = html;
+
+      toast.textContent = `✓ simplify_trip_debts() executed for ${tripId}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    } else {
+      alert(`Error: ${data.error || 'Failed to simplify debts'}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Could not connect to the server.');
+  }
 }
 
 // Initialize default today's date in date inputs on DOM load
