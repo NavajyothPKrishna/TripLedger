@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static frontend files if run together locally, or fallback
+// Serve static frontend files
 app.use(express.static(path.join(__dirname)));
 
 const PORT = process.env.PORT || 3000;
@@ -141,6 +141,55 @@ app.post('/api/member-balances', async (req, res) => {
     `;
     await pool.query(query, [tripId, userId, netBalance]);
     res.status(201).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 8. Simplify Trip Debts (simplify_trip_debts routine)
+app.post('/api/simplify-debts', async (req, res) => {
+  const { tripId } = req.body;
+  try {
+    const result = await pool.query(
+      `SELECT user_id, net_balance FROM member_balances WHERE trip_id = $1 AND net_balance != 0.00`,
+      [tripId]
+    );
+
+    let balances = result.rows.map(row => ({
+      userId: row.user_id,
+      balance: parseFloat(row.net_balance)
+    }));
+
+    let debtors = balances.filter(b => b.balance < 0).map(b => ({ ...b, balance: -b.balance }));
+    let creditors = balances.filter(b => b.balance > 0);
+
+    let transfers = [];
+    let i = 0, j = 0;
+
+    while (i < debtors.length && j < creditors.length) {
+      let debtor = debtors[i];
+      let creditor = creditors[j];
+
+      let settleAmount = Math.min(debtor.balance, creditor.balance);
+      settleAmount = Math.round(settleAmount * 100) / 100;
+
+      if (settleAmount > 0) {
+        transfers.push({
+          from: debtor.userId,
+          to: creditor.userId,
+          amount: settleAmount
+        });
+      }
+
+      debtor.balance -= settleAmount;
+      creditor.balance -= settleAmount;
+
+      if (debtor.balance === 0) i++;
+      if (creditor.balance === 0) j++;
+    }
+
+    res.status(200).json({ success: true, transfers });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: err.message });
